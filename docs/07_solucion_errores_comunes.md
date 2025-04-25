@@ -1,0 +1,1 @@
+# Solución a errores comunes

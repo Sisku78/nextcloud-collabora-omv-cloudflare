@@ -1,0 +1,1 @@
+Contenido real del archivo config.php
