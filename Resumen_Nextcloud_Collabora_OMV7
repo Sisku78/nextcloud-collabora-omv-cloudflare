@@ -1,0 +1,95 @@
+
+# Implementación de Nextcloud + Collabora + Cloudflare Tunnel en OMV 7
+
+**Fecha de finalización:** 2025-04-25 16:59:19
+
+---
+
+## 🧱 Infraestructura base
+
+- **Host:** OMV 7 (`192.168.0.98`)
+- **Nextcloud:** `192.168.0.241` (macvlan)
+- **Collabora:** `192.168.0.242` (macvlan)
+- **Cloudflared:** `192.168.0.240` (macvlan)
+- **Red Docker macvlan:** `local-network (192.168.0.240/29)`
+
+---
+
+## 🌍 Dominios públicos en Cloudflare Tunnel
+
+- `mycloud.serranos.cloud → https://192.168.0.241:443` (`noTLSVerify: true`)
+- `collabora.serranos.cloud → http://192.168.0.242:9980` (`noTLSVerify: true`)
+- Rangos privados en Cloudflare Zero Trust:
+  - `192.168.0.240/29`
+  - `172.17.0.0/16`
+
+---
+
+## ⚙️ Ajustes clave en docker-compose.yml
+
+**Contenedor Collabora:**
+
+```yaml
+extra_hosts:
+  - "mycloud.serranos.cloud:192.168.0.241"
+networks:
+  collabora-network:
+    ipv4_address: 192.168.0.242
+```
+
+---
+
+## 🔒 Certificados
+
+- Se usan certificados Let's Encrypt montados en `/etc/letsencrypt:ro`
+- Collabora: `ssl.enable: false`, `ssl.termination: true` (terminación externa en Cloudflare)
+
+---
+
+## 📂 Configuración de coolwsd.xml (resumen)
+
+```xml
+<net>
+  <listen>0.0.0.0:9980</listen>
+  <allow>0.0.0.0/0</allow>
+  <allow>::/0</allow>
+</net>
+
+<storage>
+  <wopi>
+    <host allow="true">.*</host>
+  </wopi>
+</storage>
+```
+
+---
+
+## 🧪 Errores detectados y resueltos
+
+- `Requesting address is denied: ::ffff:192.168.0.240`
+  - ✔️ Solución: `<allow>::/0</allow>`
+- `WOPI::CheckFileInfo failed`
+  - ✔️ Solución: `extra_hosts` para mycloud.serranos.cloud
+- Archivos no abrían
+  - ✔️ Solución: conexión directa y resolución local
+
+---
+
+## 🧹 Warnings menores que pueden ignorarse
+
+- `coolmount: Operation not permitted`
+- `Unknown resource: /data/.ncdata`
+- `systemplate is read-only`
+
+---
+
+## ✅ Estado final
+
+- ✔️ Collabora se comunica correctamente con Nextcloud
+- ✔️ Apertura de `.docx`, `.xlsx` funcional
+- ✔️ Cloudflare Tunnel operativo con seguridad TLS externa
+- ✔️ Sistema totalmente funcional y optimizado
+
+---
+
+🎉 **¡Implementación exitosa!**
