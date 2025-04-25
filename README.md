@@ -76,5 +76,5 @@ Este proyecto está licenciado bajo la licencia [MIT](LICENSE).
 ## 🙌 Créditos
 
 Inspirado por la comunidad de Nextcloud, Collabora, y Deepsek Linux (¡gracias!).  
-Proyecto documentado y mantenido por [TuNombre o TuGitHub].
+Proyecto documentado y mantenido por F.J.Lara.
 
